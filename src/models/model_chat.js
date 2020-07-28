@@ -5,7 +5,7 @@ module.exports = {
     // const q = `%${keyword}%`;
     // let end = limit * page - limit;
     return new Promise((resolve, reject) => {
-      let sql = `SELECT *, (SELECT fullname FROM users WHERE users.id = chat.sender) AS senderName, (SELECT fullname FROM users WHERE users.id = chat.receiver) AS receiverName FROM chat WHERE chat.sender = ? AND chat.receiver = ? OR chat.receiver = ? OR chat.sender = ?`;
+      let sql = `SELECT *, (SELECT fullname FROM users WHERE users.id = chat.sender) AS sender_name, (SELECT fullname FROM users WHERE users.id = chat.receiver) AS receiver_name FROM chat WHERE chat.sender = ? AND chat.receiver = ? OR chat.receiver = ? OR chat.sender = ?`;
       // WHERE senderName LIKE ? OR receiverName LIKE ? OR content LIKE ? ORDER BY ${sort} ${order} LIMIT ? OFFSET ?;
       connection.query(
         sql,
@@ -23,7 +23,7 @@ module.exports = {
 
   getChatById: (receiver) => {
     return new Promise((resolve, reject) => {
-      let sql = `SELECT chat.id, chat.sender, users.name as sender_name, chat.receiver, chat.message, chat.date FROM chat INNER JOIN users ON users.id=chat.sender WHERE chat.id IN (SELECT MAX(id) FROM chat WHERE chat.receiver=? GROUP BY chat.sender) ORDER BY date DESC`;
+      let sql = `SELECT chat.id, chat.sender, users.fullname as sender_name, users.image as sender_image, chat.receiver, chat.content, chat.date FROM chat INNER JOIN users ON users.id=chat.sender WHERE chat.id IN (SELECT MAX(id) FROM chat WHERE chat.receiver=? GROUP BY chat.sender) ORDER BY date DESC`;
       connection.query(sql, receiver, (error, result) => {
         if (error) {
           reject(error);

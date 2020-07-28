@@ -13,5 +13,11 @@ router.put(
   verifyJwtToken,
   userControllers.putUsers
 );
+router.delete(
+  "/:id",
+  upload.none(),
+  verifyJwtToken,
+  userControllers.deleteUsersModel
+);
 
 module.exports = router;

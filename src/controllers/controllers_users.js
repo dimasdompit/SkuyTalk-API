@@ -126,7 +126,7 @@ module.exports = {
     try {
       const data = await modelUsers.getUsersByIdModel(id);
       const result = await modelUsers.deleteUsersModel(id);
-      if (result.affectedRows === 1) {
+      if (result.affectedRows === 1 && data[0].image !== "default.png") {
         const image = data[0].image;
         fs.unlinkSync(`./assets/images/${image}`);
         return helper.response(response, "success", result, 200);
