@@ -5,55 +5,58 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const joi = require("@hapi/joi");
 
-const registerSchema = joi.object({
-  fullname: joi.string().required(),
-  email: joi
-    .string()
-    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net", "co.id"] } })
-    .required(),
-  image: joi.string(),
-  username: joi.string().alphanum().min(4).max(30).required(),
-  password: joi.string().min(6).max(30).required(),
-});
+// const registerSchema = joi.object({
+//   fullname: joi.string().required(),
+//   email: joi
+//     .string()
+//     .email({ minDomainSegments: 2, tlds: { allow: ["com", "net", "co.id"] } })
+//     .required(),
+//   image: joi.string().required(),
+//   username: joi.string().alphanum().min(4).max(30).required(),
+//   password: joi.string().min(6).max(30).required(),
+// });
 
 module.exports = {
-  register: async (request, response) => {
-    const setData = request.body;
-    const data = await modelAuth.loginModel(setData.username);
-    const existData = {
-      ...data[0],
-    };
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(setData.password, salt);
-    try {
-      if (setData.username === existData.username) {
-        return helper.response(
-          response,
-          "fail",
-          "Username is already taken!",
-          401
-        );
-      } else {
-        await registerSchema.validateAsync(setData);
-        setData.password = hash;
-        const result = await modelAuth.registerModel(setData);
-        delete result.password;
-        const newData = {
-          status: "Register Successfully!",
-          ...result,
-        };
-        return helper.response(response, "success", newData, 201);
-      }
-    } catch (error) {
-      console.log(error);
-      const errorMessage = error.message;
-      if (error.message) {
-        return helper.response(response, "fail", errorMessage, 401);
-      } else {
-        return helper.response(response, "fail", "Internal Server Error", 500);
-      }
-    }
-  },
+  // register: async (request, response) => {
+  //   const setData = request.body;
+  //   if (request.file === undefined) {
+  //     setData.image = `default.png`;
+  //   }
+  //   const data = await modelAuth.loginModel(setData.username);
+  //   const existData = {
+  //     ...data[0],
+  //   };
+  //   const salt = bcrypt.genSaltSync(10);
+  //   const hash = bcrypt.hashSync(setData.password, salt);
+  //   try {
+  //     if (setData.username === existData.username) {
+  //       return helper.response(
+  //         response,
+  //         "fail",
+  //         "Username is already taken!",
+  //         401
+  //       );
+  //     } else {
+  //       await registerSchema.validateAsync(setData);
+  //       setData.password = hash;
+  //       const result = await modelAuth.registerModel(setData);
+  //       delete result.password;
+  //       const newData = {
+  //         status: "Register Successfully!",
+  //         ...result,
+  //       };
+  //       return helper.response(response, "success", newData, 201);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     const errorMessage = error.message;
+  //     if (error.message) {
+  //       return helper.response(response, "fail", errorMessage, 401);
+  //     } else {
+  //       return helper.response(response, "fail", "Internal Server Error", 500);
+  //     }
+  //   }
+  // },
   login: async (request, response) => {
     const loginData = request.body;
     console.log(loginData);
@@ -64,7 +67,20 @@ module.exports = {
         const checkPass = bcrypt.compareSync(loginData.password, hashPass);
         if (checkPass) {
           delete result[0].password;
-          return helper.response(response, "success", result, 200);
+          const tokenData = {
+            ...result[0],
+          };
+          const token = jwt.sign(tokenData, config.jwtSecretKey, {
+            expiresIn: config.tokenLife,
+          });
+          const refreshToken = jwt.sign(tokenData, config.jwtRefreshKey);
+          result[0].token = token;
+          result[0].refreshToken = refreshToken;
+          const newData = {
+            status: "Login Success!",
+            ...result[0],
+          };
+          return helper.response(response, "success", newData, 200);
         }
         return helper.response(
           response,

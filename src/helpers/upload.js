@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
     const splitName = file.originalname.split(".");
     const ext = splitName.pop();
     const newName = splitName.join("-");
-    cb(null, `${newName}.${ext}`);
+    cb(null, `${newName}-${Date.now()}.${ext}`);
   },
 });
 
