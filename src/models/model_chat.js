@@ -21,7 +21,7 @@ module.exports = {
     });
   },
 
-  getChatById: (receiver) => {
+  getChatByIdModel: (receiver) => {
     return new Promise((resolve, reject) => {
       let sql = `SELECT chat.id, chat.sender, users.fullname as sender_name, users.image as sender_image, chat.receiver, chat.content, chat.date FROM chat INNER JOIN users ON users.id=chat.sender WHERE chat.id IN (SELECT MAX(id) FROM chat WHERE chat.receiver=? GROUP BY chat.sender) ORDER BY date DESC`;
       connection.query(sql, receiver, (error, result) => {

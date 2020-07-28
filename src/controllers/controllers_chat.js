@@ -27,6 +27,18 @@ module.exports = {
     }
   },
 
+  getChatById: async (request, response) => {
+    const decode = request.decodeToken;
+    const userId = decode.id;
+    try {
+      const result = await modelChat.getChatByIdModel(userId);
+      return helper.response(response, "success", result, 200);
+    } catch (error) {
+      console.log(error);
+      return helper.response(response, "fail", "Internal Server Error", 500);
+    }
+  },
+
   postChats: async (request, response) => {
     const setData = request.body;
     try {
