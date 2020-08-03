@@ -7,9 +7,10 @@ module.exports = {
     const id = decode.id;
     try {
       const result = await modelContact.getAllContactModel(id, id);
-      console.log(result);
+      return helper.response(response, "success", result, 200);
     } catch (error) {
       console.log(error);
+      return helper.response(response, "fail", "Internal Server Error", 400);
     }
   },
 };

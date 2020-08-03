@@ -13,13 +13,14 @@ module.exports = {
   showChats: async (request, response) => {
     const decode = request.decodeToken;
     const userId = decode.id;
+    const id = request.params.id;
     // const search = request.query.search || "";
     // const sort = request.query.sort || "senderName";
     // const order = request.query.order || "DESC";
     // const limit = request.query.limit || 6;
     // const page = request.query.page || 1;
     try {
-      const result = await modelChat.showChatsModel(userId, userId);
+      const result = await modelChat.showChatsModel(id, userId);
       return helper.response(response, "success", result, 200);
     } catch (error) {
       console.log(error);
@@ -31,7 +32,7 @@ module.exports = {
     const decode = request.decodeToken;
     const userId = decode.id;
     try {
-      const result = await modelChat.getChatByIdModel(userId);
+      const result = await modelChat.getChatByIdModel(userId, userId);
       return helper.response(response, "success", result, 200);
     } catch (error) {
       console.log(error);
