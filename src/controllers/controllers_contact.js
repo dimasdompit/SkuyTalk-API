@@ -6,7 +6,7 @@ module.exports = {
     const decode = request.decodeToken;
     const id = decode.id;
     try {
-      const result = await modelContact.getAllContactModel(id, id);
+      const result = await modelContact.getAllContactModel(id);
       return helper.response(response, "success", result, 200);
     } catch (error) {
       console.log(error);

@@ -3,7 +3,7 @@ const connection = require("../helpers/mysql");
 module.exports = {
   getAllUsersModel: () => {
     return new Promise((resolve, reject) => {
-      let sql = `SELECT users.id, users.fullname, users.email, users.image, users.username, users.created_at, users.updated_at FROM users`;
+      let sql = `SELECT users.id, users.fullname, users.email, users.image, users.username, users.latitude, users.longitude, users.created_at, users.updated_at FROM users`;
       connection.query(sql, (error, result) => {
         if (error) {
           reject(error);
@@ -15,7 +15,7 @@ module.exports = {
 
   getUsersByIdModel: (id) => {
     return new Promise((resolve, reject) => {
-      let sql = `SELECT users.id, users.fullname, users.email, users.image, users.username, users.created_at FROM users WHERE users.id=?`;
+      let sql = `SELECT users.id, users.fullname, users.email, users.image, users.username, users.latitude, users.longitude, users.created_at FROM users WHERE users.id=?`;
       connection.query(sql, id, (error, result) => {
         if (error) {
           reject(error);

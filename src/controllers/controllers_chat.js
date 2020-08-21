@@ -6,7 +6,7 @@ const joi = require("@hapi/joi");
 const postChatSchema = joi.object({
   sender: joi.number().required(),
   receiver: joi.number().required(),
-  content: joi.required(),
+  content: joi.string().required(),
 });
 
 module.exports = {
@@ -32,8 +32,13 @@ module.exports = {
     const decode = request.decodeToken;
     const userId = decode.id;
     try {
-      const result = await modelChat.getChatByIdModel(userId, userId);
-      return helper.response(response, "success", result, 200);
+      const result = await modelChat.getChatByIdModel(userId);
+      // console.log(result);
+      if (result) {
+        request.io.emit("last-chat", result, userId);
+        return helper.response(response, "success", result, 200);
+      }
+      return helper.response(response, "fail", "No Messages", 400);
     } catch (error) {
       console.log(error);
       return helper.response(response, "fail", "Internal Server Error", 500);
@@ -42,10 +47,23 @@ module.exports = {
 
   postChats: async (request, response) => {
     const setData = request.body;
+    const decode = request.decodeToken;
+    const userId = decode.id;
+    setData.sender = decode.id;
+    setData.receiver = parseInt(request.params.id);
     try {
       await postChatSchema.validateAsync(setData);
+      const getChat = await modelChat.getChatByIdModel(userId);
+      let newRes = {
+        ...getChat[0],
+      };
+      const date = newRes.date;
       const result = await modelChat.postChatsModel(setData);
-      return helper.response(response, "success", result, 201);
+      if (result) {
+        request.io.emit("chat", { ...result, date: date });
+        return helper.response(response, "success", result, 201);
+      }
+      return helper.response(response, "fail", "Send Failed", 400);
     } catch (error) {
       console.log(error);
       return helper.response(response, "fail", "Internal Server Error", 500);

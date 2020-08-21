@@ -20,11 +20,11 @@ module.exports = {
     });
   },
 
-  getChatByIdModel: (sender, receiver) => {
+  getChatByIdModel: (id) => {
     return new Promise((resolve, reject) => {
       // let sql = `SELECT chat.id, chat.sender, users.fullname as sender_name, users.image as sender_image, chat.receiver, chat.content, chat.date FROM chat INNER JOIN users ON users.id=chat.sender WHERE chat.id IN (SELECT MAX(id) FROM chat WHERE chat.receiver=? GROUP BY chat.sender) ORDER BY date DESC`;
       let sql = `SELECT m.*, users.fullname, users.image FROM chat m LEFT JOIN chat m1 ON (((m.sender = m1.sender AND m.receiver = m1.receiver) OR (m.sender = m1.receiver AND m.receiver = m1.sender ) ) AND CASE WHEN m.date = m1.date THEN m.id < m1.id ELSE m.date < m1.date END ) INNER JOIN users ON (m.sender = users.id OR m.receiver = users.id) WHERE users.id != ? AND m1.id IS null AND ? IN(m.sender, m.receiver) ORDER BY date DESC`;
-      connection.query(sql, [sender, receiver], (error, result) => {
+      connection.query(sql, [id, id], (error, result) => {
         if (error) {
           reject(error);
         }
