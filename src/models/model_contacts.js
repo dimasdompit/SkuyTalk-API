@@ -13,4 +13,31 @@ module.exports = {
       });
     });
   },
+
+  searchContactModel: (keyword, id) => {
+    const search = `%${keyword}%`;
+    return new Promise((resolve, reject) => {
+      let sql = `SELECT id, fullname, image, username FROM users WHERE username LIKE ? AND id != ?`;
+      connection.query(sql, [search, id], (error, result) => {
+        if (error) {
+          reject(error);
+        }
+
+        resolve(result);
+      });
+    });
+  },
+
+  addContactModel: (setData) => {
+    return new Promise((resolve, reject) => {
+      let sql = `INSERT INTO contacts SET ?`;
+      connection.query(sql, setData, (error, result) => {
+        if (error) {
+          reject(error);
+        }
+
+        resolve(result);
+      });
+    });
+  },
 };
