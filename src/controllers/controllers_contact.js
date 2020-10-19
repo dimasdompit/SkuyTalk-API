@@ -7,6 +7,7 @@ module.exports = {
     const id = decode.id;
     try {
       const result = await modelContact.getAllContactModel(id);
+      request.io.emit("contact", result);
       return helper.response(response, "success", result, 200);
     } catch (error) {
       console.log(error);
@@ -14,7 +15,7 @@ module.exports = {
     }
   },
   searchContact: async (request, response) => {
-    const q = request.query.q || "";
+    const q = request.query.q;
     const decode = request.decodeToken;
     const id = decode.id;
     try {

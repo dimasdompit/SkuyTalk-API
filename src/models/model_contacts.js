@@ -15,10 +15,10 @@ module.exports = {
   },
 
   searchContactModel: (keyword, id) => {
-    const search = `%${keyword}%`;
+    // const search = `'%${keyword}%'`;
     return new Promise((resolve, reject) => {
-      let sql = `SELECT id, fullname, image, username FROM users WHERE username LIKE ? AND id != ?`;
-      connection.query(sql, [search, id], (error, result) => {
+      let sql = `SELECT id, fullname, image, username FROM users WHERE username='${keyword}' AND id != ${id}`;
+      connection.query(sql, (error, result) => {
         if (error) {
           reject(error);
         }

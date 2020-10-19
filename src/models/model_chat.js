@@ -50,19 +50,15 @@ module.exports = {
     });
   },
 
-  putChatsModel: (setData, id) => {
+  putChatsModel: (data) => {
     return new Promise((resolve, reject) => {
-      let sql = `UPDATE chat SET ? WHERE id=?`;
-      connection.query(sql, [setData, id], (error, result) => {
+      let sql = `UPDATE chat SET status = 1 WHERE sender = ? AND receiver = ?`;
+      connection.query(sql, [data.me, data.id], (error, result) => {
         if (error) {
           reject(error);
         }
 
-        const newData = {
-          id,
-          ...setData,
-        };
-        resolve(newData);
+        resolve(data);
       });
     });
   },

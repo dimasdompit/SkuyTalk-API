@@ -71,10 +71,14 @@ module.exports = {
   },
 
   puChats: async (request, response) => {
-    const id = request.params.id;
-    const setData = request.body;
+    const decode = request.decodeToken;
+    const data = {
+      id: decode.id,
+      me: parseInt(request.params.id)
+    }
     try {
-      const result = await modelChat.putChatsModel(setData, id);
+      const result = await modelChat.putChatsModel(data);
+      request.io.emit('read', data.id)
       return helper.response(response, "success", result, 200);
     } catch (error) {
       console.log(error);
